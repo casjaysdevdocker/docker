@@ -174,7 +174,7 @@ docker)
         echo "Starting redis"
         sysctl vm.overcommit_memory=1
         echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
-        redis /config/redis/redis.conf &
+        redis-server /config/redis/redis.conf &
         sleep 10
       fi
       if [ ! -f "/tmp/registry.pid" ]; then
