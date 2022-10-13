@@ -9,11 +9,11 @@
 # @@Copyright        :  Copyright: (c) 2022 Jason Hempstead, Casjays Developments
 # @@Created          :  Thursday, Oct 13, 2022 15:36 EDT
 # @@File             :  entrypoint-docker.sh
-# @@Description      :  
+# @@Description      :
 # @@Changelog        :  New script
 # @@TODO             :  Better documentation
-# @@Other            :  
-# @@Resource         :  
+# @@Other            :
+# @@Resource         :
 # @@Terminal App     :  no
 # @@sudo/root        :  no
 # @@Template         :  other/docker-entrypoint
@@ -165,10 +165,23 @@ healthcheck) # Docker healthcheck
   exit ${exitCode:-$?}
   ;;
 
+docker)
+  shift 1
+  docker "$@"
+  ;;
+
 *) # Execute primary command
   if [ $# -eq 0 ]; then
-    __exec_command "/bin/bash" -l
-    exit ${exitCode:-$?}
+    if [ -f "/run/dockerd.pid" ]; then
+      echo "Docker appears to already be running"
+      echo "Starting Docker registry on port 5000"
+      docker-registry serve /config/docker/registry.yaml
+      echo "Starting dockerd on port 2375 and /var/run/docker.sock"
+      dockerd -H tcp://127.0.0.1:2375 -H unix://var/run/docker.sock --config-file /config/docker/daemon.json --pidfile /run/dockerd.pid
+      exit ${exitCode:-$?}
+    else
+      __exec_command "$@"
+    fi
   else
     __exec_command "$@"
     exitCode=$?
