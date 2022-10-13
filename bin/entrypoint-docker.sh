@@ -170,16 +170,27 @@ docker)
       echo "Docker appears to already be running"
       __exec_command "$@"
     else
-      echo "Starting Docker registry on port 5000"
-      docker-registry serve /config/docker/registry.yaml
-      echo "Starting dockerd on port 2375 and /var/run/docker.sock"
-      dockerd -H tcp://127.0.0.1:2375 -H unix://var/run/docker.sock --config-file /config/docker/daemon.json --pidfile /run/dockerd.pid
-      exit ${exitCode:-$?}
+      if [ ! -f "/tmp/redis.pid" ]; then
+        echo "Starting redis"
+        redis /config/redis/redis.conf &
+        sleep 10
+      fi
+      if [ ! -f "/tmp/registry.pid" ]; then
+        echo "Starting Docker registry on port 5000"
+        touch "/tmp/registry.pid"
+        docker-registry serve /config/docker/registry.yaml &
+        sleep 10
+      fi
+      if [ ! -f "/run/dockerd.pid" ]; then
+        echo "Starting dockerd on port 2375 and /var/run/docker.sock"
+        dockerd -H tcp://127.0.0.1:2375 -H unix://var/run/docker.sock --config-file /config/docker/daemon.json --pidfile /run/dockerd.pid
+      fi
     fi
   else
     __exec_command "$@"
     exitCode=$?
   fi
+  exit ${exitCode:-$?}
   ;;
 esac
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -24,7 +24,8 @@ RUN set -ex; \
   docker-cli \
   docker-cli-buildx \
   docker-engine \
-  docker-registry
+  docker-registry \
+  redis
 
 COPY ./bin/. /usr/local/bin/
 COPY ./data/. /usr/local/share/template-files/data/
