@@ -132,15 +132,9 @@ if [ ! -e "/config/$APPNAME" ] && [ -e "$DEFAULT_CONF_DIR/$APPNAME" ]; then
   cp -Rf "$DEFAULT_CONF_DIR/$APPNAME" "/config/$APPNAME"
 fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# Create config symlinks
-if [ -d "/config" ] || [ -n "$(__find "/config" 2>/dev/null)" ]; then
-  for conf in /config/*; do
-    if [ -e "/etc/$conf" ]; then
-      rm -Rf "/etc/${conf:?}"
-      ln -sf "/config/$conf" "/etc/$conf"
-    fi
-  done
-fi
+# Create config files
+[ -d "/data/registry" ] || mkdir -p "/data/registry"
+[ -d "/config/docker" ] || { mkdir -p "/config/docker" && cp -Rf "/usr/local/share/template-files/config/." "/config/docker/"; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional commands
 
