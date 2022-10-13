@@ -38,9 +38,9 @@ __start_shell() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 __exec_command() {
   local exitCode=0
-  local cmd="${*:-$(__start_shell) -l}"
+  local cmd="${*:-$(__start_shell)}"
   echo "Executing command: $cmd"
-  eval $cmd || exitCode=10
+  eval "$cmd" || exitCode=10
   [ "$exitCode" = 0 ] || exitCode=10
   return ${exitCode:-$?}
 }
@@ -168,13 +168,13 @@ docker)
   if [ $# -eq 0 ]; then
     if [ -f "/run/dockerd.pid" ]; then
       echo "Docker appears to already be running"
+      __exec_command "$@"
+    else
       echo "Starting Docker registry on port 5000"
       docker-registry serve /config/docker/registry.yaml
       echo "Starting dockerd on port 2375 and /var/run/docker.sock"
       dockerd -H tcp://127.0.0.1:2375 -H unix://var/run/docker.sock --config-file /config/docker/daemon.json --pidfile /run/dockerd.pid
       exit ${exitCode:-$?}
-    else
-      __exec_command "$@"
     fi
   else
     __exec_command "$@"
