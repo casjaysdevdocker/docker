@@ -1,0 +1,7 @@
+{
+    "hosts": ["fd://","unix:///var/run/docker.sock","tcp://0.0.0.0:2376"],
+    "insecure-registries": ["localhost:5000"],
+    "ip": "0.0.0.0",
+    "iptables": true,
+    "pidfile": "/tmp/docker.pid"
+}

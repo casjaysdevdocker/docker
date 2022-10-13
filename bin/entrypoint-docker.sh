@@ -134,7 +134,7 @@ fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create config files
 [ -d "/data/registry" ] || mkdir -p "/data/registry"
-[ -d "/config/docker" ] || { mkdir -p "/config/docker" && cp -Rf "/usr/local/share/template-files/config/." "/config/docker/"; }
+[ -d "/config/docker" ] || { mkdir -p "/config/docker" && cp -Rf "/usr/local/share/template-files/config/." "/config/"; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional commands
 
