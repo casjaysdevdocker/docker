@@ -185,7 +185,7 @@ docker)
       fi
       if [ ! -f "/run/dockerd.pid" ]; then
         echo "Starting dockerd on port 2375 and /var/run/docker.sock"
-        dockerd -H tcp://127.0.0.1:2375 -H unix://var/run/docker.sock --config-file /config/docker/daemon.json --pidfile /run/dockerd.pid
+        dockerd --config-file /config/docker/daemon.json
       fi
     fi
   else
