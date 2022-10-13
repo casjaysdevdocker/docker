@@ -172,6 +172,8 @@ docker)
     else
       if [ ! -f "/tmp/redis.pid" ]; then
         echo "Starting redis"
+        sysctl vm.overcommit_memory=1
+        echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
         redis /config/redis/redis.conf &
         sleep 10
       fi
