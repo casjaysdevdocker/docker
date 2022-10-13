@@ -1,6 +1,6 @@
 FROM casjaysdevdocker/alpine:latest AS build
 
-ARG alpine_version="latest"
+ARG alpine_version="edge"
 
 ARG TIMEZONE="America/New_York" \
   IMAGE_NAME="docker" \
