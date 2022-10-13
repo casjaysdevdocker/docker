@@ -133,6 +133,7 @@ if [ ! -e "/config/$APPNAME" ] && [ -e "$DEFAULT_CONF_DIR/$APPNAME" ]; then
 fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create config files
+[ -d "/data/redis" ] || mkdir -p "/data/redis"
 [ -d "/data/registry" ] || mkdir -p "/data/registry"
 [ -d "/config/docker" ] || { mkdir -p "/config/docker" && cp -Rf "/usr/local/share/template-files/config/." "/config/"; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
