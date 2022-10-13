@@ -33,12 +33,12 @@ __find() { find "$1" -mindepth 1 -type f,d 2>/dev/null | grep '^' || return 10; 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 __start_shell() {
   local l="$(which zsh || which bash || which sh || echo 'false')"
-  echo "$shell"
+  echo "$l"
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 __exec_command() {
   local exitCode=0
-  local cmd="${*:-$(__start_shell)}"
+  local cmd="${*:-$(__start_shell) -l}"
   echo "Executing command: $cmd"
   eval "$cmd" || exitCode=10
   [ "$exitCode" = 0 ] || exitCode=10
