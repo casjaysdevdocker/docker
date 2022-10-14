@@ -1,6 +1,7 @@
 #https://docs.docker.com/registry/configuration/
 version: 0.1
 log:
+  formatter: text
   fields:
     service: registry
 ################
