@@ -32,18 +32,18 @@ __buildx() {
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set additional variables
-[ -n "$1" ] && name="${1:-}" && shift 1 || name="mybuilder"
-[ -n "$1" ] && tagged_name="${1:-}" && shift 1 || tagged_name="localhost:5000/mybuilder/test:latest"
+[ -n "$1" ] && tagged_name="${1:-}" && shift 1 || tagged_name="casjaysdevdocker/test:latest"
+buildername="mybuilder"
 ADD_HOST="${*:-$ADD_TAG}"
 qemu_imagename="buildx-qemu"
 binfmt_imagename="buildx-binfmt"
 platforms="${PLATFORMS:-linux/amd64,linux/arm64}"
 export DOCKER_CLI_EXPERIMENTAL="enabled"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
-docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
-docker buildx create --name "$name" --use
-docker buildx use "$name"
+docker ps -a | grep -q "$qemu_imagename" || docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
+docker ps -a | grep -q "$binfmt_imagename" || docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
+docker ps -a | grep -q "$buildername" || docker buildx create --name "$buildername" --use
+docker buildx use "$buildername"
 docker buildx inspect --bootstrap
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main application
