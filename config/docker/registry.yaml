@@ -20,7 +20,7 @@ http:
   # host: https://your.server.fqdn:5000
   # debug: your.server.fqdn:5000
   secret: insecurebydefault
-  relativeurls: false
+  relativeurls: true
   # tls:
   #   certificate: /data/auth/certificate.crt
   #   key: /data/auth/privatekey.pem
