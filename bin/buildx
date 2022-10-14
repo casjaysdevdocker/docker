@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+#!/usr/bin/env bash
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##@Version           :  202210141608-git
+# @@Author           :  Jason Hempstead
+# @@Contact          :  git-admin@casjaysdev.com
+# @@License          :  LICENSE.md
+# @@ReadME           :  buildx --help
+# @@Copyright        :  Copyright: (c) 2022 Jason Hempstead, Casjays Developments
+# @@Created          :  Friday, Oct 14, 2022 16:08 EDT
+# @@File             :  buildx
+# @@Description      :  Docker buildx wrapper
+# @@Changelog        :  New script
+# @@TODO             :  Refactor code
+# @@Other            :
+# @@Resource         :
+# @@Terminal App     :  no
+# @@sudo/root        :  no
+# @@Template         :  bash/system
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set functions
+__buildx() {
+  eval docker buildx build \
+      --platform "$platforms" \
+      --rm \
+      --pull \
+      --no-cache \
+      --progress auto \
+      --output=type=registry \
+      -t "$tagged_name" $ADD_HOST "${dir:-$PWD}"
+      return $?
+}
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set additional variables
+[ -n "$1" ] && name="${1:-}" && shift 1 || name="mybuilder"
+[ -n "$1" ] && tagged_name="${1:-}" && shift 1 || tagged_name="localhost:5000/mybuilder/test:latest"
+ADD_HOST="${*:-$ADD_TAG}"
+qemu_imagename="buildx-qemu"
+binfmt_imagename="buildx-binfmt"
+platforms="${PLATFORMS:-linux/amd64,linux/arm64}"
+export DOCKER_CLI_EXPERIMENTAL="enabled"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
+docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
+docker buildx create --name "$name" --use
+docker buildx use "$name"
+docker buildx inspect --bootstrap
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Main application
+__buildx
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+exit $?
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# end
+
