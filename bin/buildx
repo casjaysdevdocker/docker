@@ -33,19 +33,23 @@ __buildx() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set additional variables
 [ -f "$PWD/.env.sh" ] && . "$PWD/.env.sh"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -n "$1" ] && tagged_name="${1:-}" && shift 1
-buildername="mybuilder"
 ADD_HOST="${*:-$ADD_TAG}"
+tagged_name="${tagged_name:-$TAGNAME}"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+buildername="mybuilder"
 qemu_imagename="buildx-qemu"
 binfmt_imagename="buildx-binfmt"
 platforms="${PLATFORMS:-linux/amd64,linux/arm64}"
-tagged_name="${TAGNAME:-$tagged_name}"
 export DOCKER_CLI_EXPERIMENTAL="enabled"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -n "$tagged_name" ] || { echo "USAGE: buildx [tagname]" && exit 1; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-docker ps -a | grep -q "$qemu_imagename" || docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
-docker ps -a | grep -q "$binfmt_imagename" || docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
-docker ps -a | grep -q "$buildername" || docker buildx create --name "$buildername" --use
+
+docker ps -a 2>&1 | grep -q "$qemu_imagename" || docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
+docker ps -a 2>&1 | grep -q "$binfmt_imagename" || docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
+docker ps -a 2>&1 | grep -q "$buildername" || docker buildx create --name "$buildername" --use
 docker buildx use "$buildername"
 docker buildx inspect --bootstrap
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
