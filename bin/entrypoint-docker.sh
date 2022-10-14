@@ -139,6 +139,7 @@ fi
 [ -d "/config/docker" ] || { mkdir -p "/config/docker" && cp -Rf "/usr/local/share/template-files/config/." "/config/"; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional commands
+[ -f "/etc/docker/key.json" ] && [ ! -f "/config/docker/key.json" ] && cp -Rf "/etc/docker/key.json" "/config/docker/key.json"
 chmod -Rfv 777 "/data/registry"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 case "$1" in
