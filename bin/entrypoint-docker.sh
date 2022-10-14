@@ -134,13 +134,10 @@ fi
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Create config files
 [ -d "/var/run" ] || mkdir -p "/var/run"
-[ -d "/data/redis" ] || mkdir -p "/data/redis"
-[ -d "/data/registry" ] || mkdir -p "/data/registry"
 [ -d "/config/docker" ] || { mkdir -p "/config/docker" && cp -Rf "/usr/local/share/template-files/config/." "/config/"; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Additional commands
-[ -f "/etc/docker/key.json" ] && [ ! -f "/config/docker/key.json" ] && cp -Rf "/etc/docker/key.json" "/config/docker/key.json"
-chmod -Rfv 777 "/data/registry"
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 case "$1" in
 --help) # Help message
@@ -162,9 +159,16 @@ healthcheck) # Docker healthcheck
   exit ${exitCode:-$?}
   ;;
 
+buildx)
+  shift 1
+  buildx "$@"
+  exit $?
+  ;;
+
 docker)
   shift 1
   docker "$@"
+  exit $?
   ;;
 
 *) # Execute primary command
@@ -173,19 +177,6 @@ docker)
       echo "Docker appears to already be running"
       __exec_command "$@"
     else
-      if [ ! -f "/tmp/redis.pid" ]; then
-        echo "Starting redis"
-        sysctl vm.overcommit_memory=1
-        echo madvise > /sys/kernel/mm/transparent_hugepage/enabled
-        redis-server /config/redis/redis.conf &
-        sleep 10
-      fi
-      if [ ! -f "/tmp/registry.pid" ]; then
-        echo "Starting Docker registry on port 5000"
-        touch "/tmp/registry.pid"
-        docker-registry serve /config/docker/registry.yaml &
-        sleep 10
-      fi
       if [ ! -f "/run/dockerd.pid" ]; then
         echo "Starting dockerd on port 2375 and /var/run/docker.sock"
         dockerd -H tcp://127.0.0.1:2375 -H unix:///var/run/docker.sock -H unix:///tmp/docker.sock --config-file /config/docker/daemon.json
