@@ -24,6 +24,7 @@ __buildx() {
       --platform "$platforms" \
       --rm \
       --pull \
+      --push \
       --no-cache \
       --progress auto \
       --output=type=registry \
