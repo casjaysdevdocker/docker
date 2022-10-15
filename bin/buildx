@@ -28,7 +28,7 @@ __buildx() {
       --no-cache \
       --progress auto \
       --output=type=registry \
-      -t "$tagged_name" $ADD_HOST "${dir:-$PWD}"
+      -t "$tagged_name" $ADD_HOST "${directory:-$PWD}"
       return $?
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -39,15 +39,18 @@ __buildx() {
 ADD_HOST="${*:-$ADD_TAG}"
 tagged_name="${tagged_name:-$TAGNAME}"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+exitCode=0
 buildername="mybuilder"
 qemu_imagename="buildx-qemu"
 binfmt_imagename="buildx-binfmt"
 platforms="${PLATFORMS:-linux/amd64,linux/arm64}"
+docker_files="$(find "/root/build" -name 'Dockerfile*' 2>/dev/null | grep '^'|| false)"
 export DOCKER_CLI_EXPERIMENTAL="enabled"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -n "$tagged_name" ] || { echo "USAGE: buildx [tagname]" && exit 1; }
+[ -n "$docker_files"  ] || { echo "No Dockerfile found in $HOME/build" && exit 1; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
+docker_files="$(find "/root/build" -name 'Dockerfile*' 2>/dev/null | grep '^'|| false)"
 docker ps -a 2>&1 | grep -q "$qemu_imagename" || docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
 docker ps -a 2>&1 | grep -q "$binfmt_imagename" || docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
 docker ps -a 2>&1 | grep -q "$buildername" || docker buildx create --name "$buildername" --use
@@ -55,9 +58,14 @@ docker buildx use "$buildername"
 docker buildx inspect --bootstrap
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main application
-__buildx
+for file in $docker_files; do
+  directory="$(direname "$file")"
+  image_name="$(basename "$directory")"
+  tagged_name="casjaysdevdocker/$image_name=:latest"
+  cd "$directory" && __buildx || exitCode+="$((exitCode+1))"
+done
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-exit $?
+exit $exitCode
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # end
 
