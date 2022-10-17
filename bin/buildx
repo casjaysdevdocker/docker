@@ -20,15 +20,12 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set functions
 __buildx() {
+  local platforms="${platforms// /,}"
   eval docker buildx build \
       --platform "$platforms" \
-      --rm \
-      --pull \
-      --push \
-      --no-cache \
-      --progress auto \
-      --output=type=registry \
-      -t "$tagged_name" $ADD_HOST "${directory:-$PWD}"
+      --rm --pull --push --no-cache \
+      --progress auto --output=type=registry \
+      -t "$tagged_name" "${directory:-$PWD}"
       return $?
 }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -45,6 +42,7 @@ qemu_imagename="buildx-qemu"
 binfmt_imagename="buildx-binfmt"
 platforms="${PLATFORMS:-linux/amd64,linux/arm64}"
 docker_files="$(find "/root/build" -name 'Dockerfile*' 2>/dev/null | grep '^'|| false)"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export DOCKER_CLI_EXPERIMENTAL="enabled"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -n "$tagged_name" ] || { echo "USAGE: buildx [tagname]" && exit 1; }

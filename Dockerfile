@@ -18,13 +18,7 @@ RUN set -ex; \
   echo "http://dl-cdn.alpinelinux.org/alpine/$alpine_version/community" >> "/etc/apk/repositories"; \
   if [ "$alpine_version" = "edge" ]; then echo "http://dl-cdn.alpinelinux.org/alpine/$alpine_version/testing" >> "/etc/apk/repositories" ; fi ; \
   apk update --update-cache && apk add \
-  docker \
-  dockerize \
-  docker-cli \
-  docker-engine \
-  docker-cli-buildx \
-  docker-cli-compose \
-  docker-cli-buildx
+  docker dockerize docker-cli docker-engine docker-cli-buildx docker-cli-compose docker-cli-buildx
 
 COPY ./bin/. /usr/local/bin/
 COPY ./data/. /usr/local/share/template-files/data/
