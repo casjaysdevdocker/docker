@@ -20,15 +20,18 @@
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set functions
 __buildx() {
-  local exitStatus=0 build_platforms="" reg_tag="${1:-$TAG_NAME}" dir="${directory:-.}"
+  local exitStatus=0 reg_tag="${1:-$TAG_NAME}" dir="${directory:-.}"
   [ -n "$platforms" ] && build_platforms="--platform ${platforms// /,}"
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Initialize
-  __image_exists "$qemu_imagename" || docker run --pull -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes
-  __image_exists "$binfmt_imagename" || docker run --pull -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all
-  __image_exists "$buildername" || docker buildx create --name "$buildername" --use
-  docker buildx use "$buildername"
-  docker buildx inspect --bootstrap
+  echo "Setting target platform to $platforms"
+  echo "and setting buildername to $buildername"
+  echo "Initializing $qemu_imagename $binfmt_imagename"
+  __image_exists "$qemu_imagename" || docker run --pull -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$binfmt_imagename" || docker run --pull -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$buildername" || docker buildx create --name "$buildername" --use &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  docker buildx use "$buildername" &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  docker buildx inspect --bootstrap &>/dev/null || { echo "Failed to Initialize" && exit 1; }
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Build
   echo "Building $reg_tag"
@@ -68,9 +71,8 @@ export DOCKER_CLI_EXPERIMENTAL="enabled"
 [ -n "$TAG_NAME" ] || { echo "USAGE: buildx [tagname]" && exit 1; }
 [ -n "$docker_files" ] || { echo "No Dockerfile found in $HOME/build" && exit 1; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-echo "Setting target platform to $platforms"
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main application
+clear
 if [ -n "$docker_file" ]; then
   directory="$(dirname "$file")"
   image_name="$(basename "$directory")"
