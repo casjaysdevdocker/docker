@@ -74,11 +74,12 @@ export DOCKER_CLI_EXPERIMENTAL="enabled"
 echo "$TAG_NAME" | grep -q ':' || TAG_NAME="$TAG_NAME:latest"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [ -n "$(pgrep -x dockerd)" ] || start-docker.sh &>/dev/null &
-[ -n "$TAG_NAME" ] && { [ -n "$docker_file" ] || [ -n "$docker_files" ]; } || { echo "USAGE: buildx [dir] [tagname]" && exit 1; }
+[ -n "$docker_file" ] || [ -n "$docker_files" ] || { echo "USAGE: buildx [dir] [tagname]" && exit 1; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Main application
 clear
 if [ -n "$docker_file" ]; then
+  [ -n "$TAG_NAME" ] || { echo "USAGE: buildx [dir] [tagname]" && exit 1; }
   directory="$(dirname "$docker_file")"
   [ -n "$REGISTRY" ] && tag_name="$REGISTRY/$TAG_NAME" || tag_name="$TAG_NAME"
   tag_name="$(echo "$REGISTRY/$TAG_NAME" | tr '[:upper:]' '[:lower:]')"
