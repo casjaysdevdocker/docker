@@ -23,7 +23,7 @@ __buildx() {
   local exitStatus=0 reg_tag="${1:-$TAG_NAME}" dir="${directory:-.}"
   [ -n "$platforms" ] && build_platforms="--platform ${platforms// /,}"
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  [ -d "$PWD/.git" ] && git pull -q && echo "Updating git repo"
+  #[ -d "$PWD/.git" ] && git pull -q && echo "Updating git repo"
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Initialize
   echo "Setting target platform to $platforms"
