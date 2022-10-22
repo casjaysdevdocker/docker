@@ -31,11 +31,11 @@ __buildx() {
   echo "Setting target platform to $platforms"
   echo "Setting the buildername to $buildername"
   echo "Initializing $qemu_imagename $binfmt_imagename"
-  __image_exists "$qemu_imagename" || docker run --pull -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes #|| { echo "Failed to Initialize" && exit 1; }
-  __image_exists "$binfmt_imagename" || docker run --pull -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all       #|| { echo "Failed to Initialize" && exit 1; }
-  __image_exists "$buildername" || docker buildx create --name "$buildername" --use                                                        #|| { echo "Failed to Initialize" && exit 1; }
-  docker buildx use "$buildername"                                                                                                         #|| { echo "Failed to Initialize" && exit 1; }
-  docker buildx inspect --bootstrap                                                                                                        #|| { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$qemu_imagename" || docker run -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$binfmt_imagename" || docker run -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$buildername" || docker buildx create --name "$buildername" --use &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  docker buildx use "$buildername" &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  docker buildx inspect --bootstrap &>/dev/null || { echo "Failed to Initialize" && exit 1; }
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Build
   echo "Building $reg_tag"
@@ -54,6 +54,7 @@ __buildx() {
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 __image_exists() { docker ps -a 2>&1 | grep -q "$1" || return 1; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[ -f "/root/.docker/config.json" ] || { echo "/root/.docker/config.json Does not exist did you mount it?" && exit 1; }
 [ -d "/root/build" ] && cd "/root/build" || { echo "/root/build Does not exist did you mount your project?" && exit 1; }
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set additional variables
@@ -70,7 +71,7 @@ buildername="mybuilder"
 qemu_imagename="buildx-qemu"
 binfmt_imagename="buildx-binfmt"
 platforms="${PLATFORMS:-linux/amd64,linux/arm64}"
-docker_files="$(find "/root/build" -name 'Dockerfile*' 2>/dev/null | grep '^' || false)"
+docker_files="$(find "/root/build" -name 'Dockerfile*' 2>/dev/null | sort -u | grep '^' || false)"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 export DOCKER_CLI_EXPERIMENTAL="enabled"
 echo "$TAG_NAME" | grep -q ':' || TAG_NAME="$TAG_NAME:latest"
