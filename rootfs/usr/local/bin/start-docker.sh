@@ -77,7 +77,7 @@ CONTAINER_IP_ADDRESS="$(ip a 2>/dev/null | grep 'inet' | grep -v '127.0.0.1' | a
 # Overwrite variables
 SERVICE_PORT="2375"
 SERVICE_NAME="dockerd"
-SERVICE_COMMAND="$SERVICE_NAME -H tcp://127.0.0.1:$SERVICE_PORT -H unix:///var/run/docker.sock -H unix:///tmp/docker.sock --config-file /config/docker/daemon.json --pidfile /tmp/$SERVICE_NAME.pid"
+SERVICE_COMMAND="$SERVICE_NAME -H tcp://127.0.0.1:$SERVICE_PORT -H unix:///var/run/docker.sock -H unix:///tmp/docker.sock --config-file /config/docker/daemon.json"
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Show start message

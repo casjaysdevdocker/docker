@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ##@Version           :  202210141608-git
 # @@Author           :  Jason Hempstead
@@ -18,6 +17,9 @@
 # @@sudo/root        :  no
 # @@Template         :  bash/system
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set bash options
+[ -n "$DEBUG" ] && set -x
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # Set functions
 __buildx() {
   local exitStatus=0 reg_tag="${1:-$TAG_NAME}" dir="${directory:-.}"
@@ -27,13 +29,13 @@ __buildx() {
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Initialize
   echo "Setting target platform to $platforms"
-  echo "and setting buildername to $buildername"
+  echo "Setting the buildername to $buildername"
   echo "Initializing $qemu_imagename $binfmt_imagename"
-  __image_exists "$qemu_imagename" || docker run --pull -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes &>/dev/null || { echo "Failed to Initialize" && exit 1; }
-  __image_exists "$binfmt_imagename" || docker run --pull -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all &>/dev/null || { echo "Failed to Initialize" && exit 1; }
-  __image_exists "$buildername" || docker buildx create --name "$buildername" --use &>/dev/null || { echo "Failed to Initialize" && exit 1; }
-  docker buildx use "$buildername" &>/dev/null || { echo "Failed to Initialize" && exit 1; }
-  docker buildx inspect --bootstrap &>/dev/null || { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$qemu_imagename" || docker run --pull -d --name "$qemu_imagename" --privileged multiarch/qemu-user-static --reset -p yes #|| { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$binfmt_imagename" || docker run --pull -d --name "$binfmt_imagename" --privileged tonistiigi/binfmt --install all       #|| { echo "Failed to Initialize" && exit 1; }
+  __image_exists "$buildername" || docker buildx create --name "$buildername" --use                                                        #|| { echo "Failed to Initialize" && exit 1; }
+  docker buildx use "$buildername"                                                                                                         #|| { echo "Failed to Initialize" && exit 1; }
+  docker buildx inspect --bootstrap                                                                                                        #|| { echo "Failed to Initialize" && exit 1; }
   # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   # Build
   echo "Building $reg_tag"
