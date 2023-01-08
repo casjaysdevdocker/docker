@@ -1,12 +1,12 @@
 FROM casjaysdevdocker/alpine:latest AS build
 
-ARG ALPINE_VERSION="edge"
+ARG ALPINE_VERSION="v3.16"
 
 ARG DEFAULT_DATA_DIR="/usr/local/share/template-files/data" \
   DEFAULT_CONF_DIR="/usr/local/share/template-files/config" \
   DEFAULT_TEMPLATE_DIR="/usr/local/share/template-files/defaults"
 
-ARG PACK_LIST="docker dockerize docker-cli docker-engine docker-cli-buildx docker-cli-compose docker-cli-buildx"
+ARG PACK_LIST="bash"
 
 ENV LANG=en_US.UTF-8 \
   ENV=ENV=~/.bashrc \
@@ -42,15 +42,15 @@ RUN echo 'Running cleanup' ; \
 FROM scratch
 
 ARG \
-  SERVICE_PORT="2375" \
-  EXPOSE_PORTS="2375" \
+  SERVICE_PORT="80" \
+  EXPOSE_PORTS="80" \
   PHP_SERVER="docker" \
   NODE_VERSION="system" \
   NODE_MANAGER="system" \
   BUILD_VERSION="latest" \
   LICENSE="MIT" \
   IMAGE_NAME="docker" \
-  BUILD_DATE="Fri Oct 21 06:13:33 PM EDT 2022" \
+  BUILD_DATE="Sun Nov 13 12:16:15 PM EST 2022" \
   TIMEZONE="America/New_York"
 
 LABEL maintainer="CasjaysDev <docker-admin@casjaysdev.com>" \
@@ -68,7 +68,8 @@ LABEL maintainer="CasjaysDev <docker-admin@casjaysdev.com>" \
   org.opencontainers.image.vcs-url="https://github.com/casjaysdevdocker/${IMAGE_NAME}" \
   org.opencontainers.image.url.source="https://github.com/casjaysdevdocker/${IMAGE_NAME}" \
   org.opencontainers.image.documentation="https://hub.docker.com/r/casjaysdevdocker/${IMAGE_NAME}" \
-  org.opencontainers.image.description="Containerized version of ${IMAGE_NAME}"
+  org.opencontainers.image.description="Containerized version of ${IMAGE_NAME}" \
+  com.github.containers.toolbox="false"
 
 ENV LANG=en_US.UTF-8 \
   ENV=~/.bashrc \
@@ -93,3 +94,4 @@ EXPOSE $EXPOSE_PORTS
 #CMD [ "" ]
 ENTRYPOINT [ "tini", "-p", "SIGTERM", "--", "/usr/local/bin/entrypoint.sh" ]
 HEALTHCHECK --start-period=1m --interval=2m --timeout=3s CMD [ "/usr/local/bin/entrypoint.sh", "healthcheck" ]
+
