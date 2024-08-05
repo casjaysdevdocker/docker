@@ -1,0 +1,38 @@
+#!/usr/bin/env sh
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+##@Version           :  202408041804-git
+# @@Author           :  CasjaysDev
+# @@Contact          :  CasjaysDev <docker-admin@casjaysdev.pro>
+# @@License          :  MIT
+# @@ReadME           :
+# @@Copyright        :  Copyright 2023 CasjaysDev
+# @@Created          :  Mon Aug 28 06:48:42 PM EDT 2023
+# @@File             :  custom
+# @@Description      :  script to run custom
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# shellcheck shell=sh
+# shellcheck disable=SC2016
+# shellcheck disable=SC2031
+# shellcheck disable=SC2120
+# shellcheck disable=SC2155
+# shellcheck disable=SC2199
+# shellcheck disable=SC2317
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set bash options
+[ "$DEBUGGER" = "on" ] && echo "Enabling debugging" && set -ex$DEBUGGER_OPTIONS || set -e
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set env variables
+exitCode=0
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[ -d "/etc/nginx" ] && rm -Rf "/etc/nginx"/*
+[ -d "/tmp/etc" ] && cp -Rf "/tmp/etc/." "/etc/"
+git clone -q "https://github.com/casjay-dotfiles/scripts" "/usr/local/share/CasjaysDev/scripts"
+ln -sf "/usr/local/share/CasjaysDev/scripts/bin/buildx" "/usr/local/bin"
+ln -sf "/usr/local/share/CasjaysDev/scripts/bin/gitadmin" "/usr/local/bin"
+ln -sf "/usr/local/share/CasjaysDev/scripts/bin/gitcommit" "/usr/local/bin"
+ln -sf "/usr/local/share/CasjaysDev/scripts/bin/detectostype" "/usr/local/bin"
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# Set the exit code
+[ $exitCode -eq 0 ] && [ -x "$ACT_BIN_FILE" ] && [ -x "$ACT_BIN_FILE" ] && echo "Gitea has been setup" || exitCode=2
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+exit $exitCode
