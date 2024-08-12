@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:experimental
+# syntax=docker/dockerfile:1
 # Docker image for docker using the alpine template
 ARG IMAGE_NAME="docker"
 ARG PHP_SERVER="docker"
