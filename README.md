@@ -19,17 +19,17 @@ dockermgr update docker
 ## Install and run container
   
 ```shell
-mkdir -p "$HOME/.local/share/srv/docker/docker/rootfs"
+mkdir -p "$HOME/.local/share/srv/docker/docker/volumes"
 git clone "https://github.com/dockermgr/docker" "$HOME/.local/share/CasjaysDev/dockermgr/docker"
-cp -Rfva "$HOME/.local/share/CasjaysDev/dockermgr/docker/rootfs/." "$HOME/.local/share/srv/docker/docker/rootfs/"
+cp -Rfva "$HOME/.local/share/CasjaysDev/dockermgr/docker/rootfs/." "$HOME/.local/share/srv/docker/docker/volumes/"
 docker run -d \
 --restart always \
 --privileged \
 --name casjaysdevdocker-docker \
 --hostname docker \
 -e TZ=${TIMEZONE:-America/New_York} \
--v "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/rootfs/data:/data:z" \
--v "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/rootfs/config:/config:z" \
+-v "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/data:/data:z" \
+-v "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/config:/config:z" \
 -p 80:80 \
 casjaysdevdocker/docker:latest
 ```
@@ -46,8 +46,8 @@ services:
       - TZ=America/New_York
       - HOSTNAME=docker
     volumes:
-      - "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/rootfs/data:/data:z"
-      - "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/rootfs/config:/config:z"
+      - "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/data:/data:z"
+      - "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/config:/config:z"
     ports:
       - 80:80
     restart: always
