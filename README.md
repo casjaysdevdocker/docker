@@ -1,6 +1,6 @@
 ## 👋 Welcome to docker 🚀  
 
-Description  
+docker README  
   
   
 ## Install my system scripts  
@@ -19,17 +19,18 @@ dockermgr update docker
 ## Install and run container
   
 ```shell
-mkdir -p "$HOME/.local/share/srv/docker/docker/volumes"
+dockerHome="/var/lib/srv/$USER/docker/casjaysdevdocker/docker/docker/latest/rootfs"
+mkdir -p "/var/lib/srv/$USER/docker/docker/rootfs"
 git clone "https://github.com/dockermgr/docker" "$HOME/.local/share/CasjaysDev/dockermgr/docker"
-cp -Rfva "$HOME/.local/share/CasjaysDev/dockermgr/docker/rootfs/." "$HOME/.local/share/srv/docker/docker/volumes/"
+cp -Rfva "$HOME/.local/share/CasjaysDev/dockermgr/docker/rootfs/." "$dockerHome/"
 docker run -d \
 --restart always \
 --privileged \
---name casjaysdevdocker-docker \
+--name casjaysdevdocker-docker-latest \
 --hostname docker \
 -e TZ=${TIMEZONE:-America/New_York} \
--v "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/data:/data:z" \
--v "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/config:/config:z" \
+-v "$dockerHome/data:/data:z" \
+-v "$dockerHome/config:/config:z" \
 -p 80:80 \
 casjaysdevdocker/docker:latest
 ```
@@ -46,8 +47,8 @@ services:
       - TZ=America/New_York
       - HOSTNAME=docker
     volumes:
-      - "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/data:/data:z"
-      - "$HOME/.local/share/srv/docker/casjaysdevdocker-docker/volumes/config:/config:z"
+      - "/var/lib/srv/$USER/docker/casjaysdevdocker/docker/docker/latest/rootfs/data:/data:z"
+      - "/var/lib/srv/$USER/docker/casjaysdevdocker/docker/docker/latest/rootfs/config:/config:z"
     ports:
       - 80:80
     restart: always
